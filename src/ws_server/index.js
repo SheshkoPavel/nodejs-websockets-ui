@@ -21,21 +21,39 @@ export const wsCallback = (ws) => {
         const parsedMSG = JSON.parse(message.toString());
         console.log('parsedMSG <-------', parsedMSG);
 
-        const obj = {
-            type: "reg",
-            data:
-                {
-                    name: '11111',
-                    index: 1,
-                    error: false,
-                    errorText: 'Error string',
-                },
-            id: 0,
-        };
 
-        obj.data = JSON.stringify(obj.data);
 
         if (parsedMSG.type === 'reg') {
+            const obj = {
+                type: "reg",
+                data:
+                    {
+                        name: '11111',
+                        index: 1,
+                        error: false,
+                        errorText: 'Error string',
+                    },
+                id: 0,
+            };
+
+            obj.data = JSON.stringify(obj.data);
+
+            ws.send(JSON.stringify(obj));
+        }
+
+        if (parsedMSG.type === 'create_room') {
+            const obj = {
+                type: "create_game",
+                data:
+                    {
+                        idGame: 0,
+                        idPlayer: 0,
+                    },
+                id: 0,
+            };
+
+            obj.data = JSON.stringify(obj.data);
+
             ws.send(JSON.stringify(obj));
         }
 
