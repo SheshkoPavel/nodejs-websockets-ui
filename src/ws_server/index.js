@@ -5,10 +5,10 @@ const port = process.env.PORT || 8080;
 
 export const wsServer = new WebSocketServer({ port });
 
+const players = [];
+
 export const wsCallback = (ws) => {
     console.log('Connected <-------', ws);
-
-    const players = [];
 
     ws.send(JSON.stringify('Hello friend!'))
 
@@ -35,12 +35,12 @@ export const wsCallback = (ws) => {
                 type: "reg",
                 data:
                     {
-                        name: players[0].name,
+                        name: parsedMSG.data.name,
                         index: players.length,
                         error: false,
                         errorText: 'Error string',
                     },
-                id: 0,
+                id: players.length - 1,
             };
 
             obj.data = JSON.stringify(obj.data);
@@ -115,8 +115,38 @@ export const wsCallback = (ws) => {
             };
 
             obj.data = JSON.stringify(obj.data);
+            console.log('obj <-------', obj);
 
             ws.send(JSON.stringify(obj));
+
+            console.log('players <-------', players);
+
+            if (players.length > 1) {
+                const startGame = {
+                    type: "start_game",
+                    data:
+                    {
+                        ships:
+                            [
+                                {
+                                    position: {
+                                        x: 2,
+                                        y: 5,
+                                    },
+                                    direction: false,
+                                    length: 4,
+                                    type: "huge",
+                                }
+                            ],
+                        currentPlayerIndex: 0, /* id of the player in the current game who have sent his ships */
+                    },
+                    id: 0,
+                };
+
+                startGame.data = JSON.stringify(startGame.data);
+
+                ws.send(JSON.stringify(startGame));
+            }
         }
 
         ws.on('error', console.error);
